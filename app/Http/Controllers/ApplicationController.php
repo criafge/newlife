@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ApplicationStoreRequest;
+use App\Http\Requests\EditRequest;
 use App\Models\Application;
 use App\Models\Category;
 use App\Models\District;
@@ -28,7 +29,7 @@ class ApplicationController extends Controller
         $filename = $request->file('photo')->getClientOriginalName();
         $path = $request->file('photo')->storeAs('public', $filename);
         Auth::user() != null ? $user = Auth::user()->id : $user = null;
-        $asd = Application::create([
+        Application::create([
             'title' => $request->title,
             'description' => $request->description,
             'phone' => $request->phone,
@@ -37,8 +38,7 @@ class ApplicationController extends Controller
             'category_id' => $request->category_id,
             'district_id' => $request->district_id,
         ]);
-        // return redirect()->back()->with('success', 'Успешный успех');
-        dd($asd);
+        return redirect()->back()->with('success', 'Успешный успех');
     }
 
 
@@ -47,22 +47,23 @@ class ApplicationController extends Controller
      */
     public function show(Application $application)
     {
-        return view('application', $application);
+        return view('application', ['application' => $application, 'comments' => $application->comments]);
     }
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(Application $application)
     {
-        //
+        return view('edit', ['application' => $application, 'categories' => Category::all(), 'districts' => District::all()]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(EditRequest $request, Application $application)
     {
-        //
+        $application->update($request->validated());
+        return redirect()->back()->with('success', 'Объявление редактировано');
     }
 
     /**

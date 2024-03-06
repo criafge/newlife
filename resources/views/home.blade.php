@@ -1,23 +1,26 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header">{{ __('Dashboard') }}</div>
-
+    <div class="container">
+        @foreach ($applications as $item)
+            <div class="card" style="width: 18rem;">
+                <img src="{{ Storage::url($item->photo) }}" class="card-img-top" alt="...">
                 <div class="card-body">
-                    @if (session('status'))
-                        <div class="alert alert-success" role="alert">
-                            {{ session('status') }}
-                        </div>
+                    <h5 class="card-title">{{ $item->title }}</h5>
+                    <p class="card-text">{{ $item->description }}</p>
+                    <p class="card-text">{{ $item->status_id }}</p>
+                    @if ($item->status_id == 2 || $item->status_id == 3)
+                        <form action="{{ route('applications.destroy', $item->id) }}" method="post">
+                            @csrf
+                            @method('delete')
+                            <button type="submit" class="btn btn-primary">Удалить</button>
+                        </form>
+                        <a href="{{ route('applications.edit', $item->id) }}" class="btn btn-primary">Редактировать</a>
                     @endif
 
-                    {{ __('You are logged in!') }}
                 </div>
             </div>
-        </div>
+        @endforeach
+
     </div>
-</div>
 @endsection
